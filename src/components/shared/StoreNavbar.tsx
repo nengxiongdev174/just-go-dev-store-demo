@@ -1,16 +1,16 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ShoppingBag,
   Search,
   PackageCheck,
   SlidersHorizontal,
-  Boxes,
   Sun,
   Moon,
-  UserCheck,
-  LogIn,
   X,
   Sparkles,
 } from "lucide-react";
@@ -20,15 +20,6 @@ import { useStore } from "@/context/StoreContext";
 import { type Locale } from "@/locales";
 import { type CurrencyCode } from "@/types/store";
 
-export type StoreTab = "shop" | "orders" | "admin" | "settings";
-
-interface StoreNavbarProps {
-  activeTab: StoreTab;
-  onSelectTab: (tab: StoreTab) => void;
-  searchQuery: string;
-  onSearchChange: (q: string) => void;
-}
-
 const LOCALES: { code: Locale; label: string }[] = [
   { code: "lo", label: "ລາວ" },
   { code: "th", label: "ไทย" },
@@ -37,12 +28,9 @@ const LOCALES: { code: Locale; label: string }[] = [
 
 const CURRENCIES: CurrencyCode[] = ["LAK", "THB", "USD"];
 
-export function StoreNavbar({
-  activeTab,
-  onSelectTab,
-  searchQuery,
-  onSearchChange,
-}: StoreNavbarProps) {
+export function StoreNavbar() {
+  const pathname = usePathname();
+  const router = useRouter();
   const { locale, setLocale, dictionary } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const {
@@ -51,19 +39,20 @@ export function StoreNavbar({
     user,
     currency,
     setCurrency,
+    searchQuery,
+    setSearchQuery,
     setIsCartOpen,
-    setIsLoginModalOpen,
   } = useStore();
 
   const handleSearchInput = (val: string) => {
-    onSearchChange(val);
-    if (activeTab !== "shop") {
-      onSelectTab("shop");
+    setSearchQuery(val);
+    if (pathname !== "/shop") {
+      router.push("/shop");
     }
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-card/90 backdrop-blur-xl border-b border-border transition-colors">
+    <header className="sticky top-0 z-40 w-full bg-card/90 backdrop-blur-xl border-b border-border transition-colors print:hidden">
       {/* Top Promo Strip */}
       <div className="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 text-white text-xs py-2 px-4">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
@@ -116,20 +105,26 @@ export function StoreNavbar({
         </div>
       </div>
 
-      {/* Main Navbar */}
+      {/* Main Storefront Navbar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
         {/* Brand Logo */}
-        <button
-          type="button"
-          onClick={() => onSelectTab("shop")}
-          className="flex items-center gap-3 text-left group cursor-pointer"
+        <Link
+          href="/shop"
+          className="flex items-center gap-3 text-left group"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-            <ShoppingBag className="w-5 h-5" />
+          <div className="w-12 h-10 relative flex items-center justify-center shrink-0">
+            <Image
+              src="/jgd-latets-logo-no-bg.png"
+              alt="JustGoDev Logo"
+              width={80}
+              height={80}
+              className="w-full h-full object-contain"
+              priority
+            />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-lg tracking-tight text-foreground">
+              <span className="font-bold text-base sm:text-lg tracking-tight text-foreground">
                 {dictionary.brand.name}
               </span>
               <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
@@ -140,7 +135,7 @@ export function StoreNavbar({
               {dictionary.brand.subtitle}
             </p>
           </div>
-        </button>
+        </Link>
 
         {/* Live Search Bar */}
         <div className="relative flex-1 max-w-md min-w-[220px] order-3 lg:order-2 w-full lg:w-auto">
@@ -163,27 +158,25 @@ export function StoreNavbar({
           )}
         </div>
 
-        {/* Navigation Links & Action Buttons */}
+        {/* Storefront Navigation Links & Actions (Strictly Customer Modules Only) */}
         <div className="flex items-center gap-1.5 sm:gap-2 order-2 lg:order-3">
           <nav className="flex items-center bg-secondary/60 p-1 rounded-xl border border-border/60">
-            <button
-              type="button"
-              onClick={() => onSelectTab("shop")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all cursor-pointer ${
-                activeTab === "shop"
+            <Link
+              href="/shop"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                pathname === "/shop"
                   ? "bg-card text-primary shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <ShoppingBag className="w-4 h-4" />
               <span className="hidden sm:inline">{dictionary.nav.shop}</span>
-            </button>
+            </Link>
 
-            <button
-              type="button"
-              onClick={() => onSelectTab("orders")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all cursor-pointer ${
-                activeTab === "orders"
+            <Link
+              href="/orders"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                pathname === "/orders"
                   ? "bg-card text-primary shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               }`}
@@ -193,33 +186,19 @@ export function StoreNavbar({
               <span className="px-1.5 py-0.2 text-[10px] rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold">
                 {orders.length}
               </span>
-            </button>
+            </Link>
 
-            <button
-              type="button"
-              onClick={() => onSelectTab("admin")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all cursor-pointer ${
-                activeTab === "admin"
-                  ? "bg-card text-primary shadow-xs font-semibold"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Boxes className="w-4 h-4" />
-              <span className="hidden md:inline">{dictionary.nav.admin}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onSelectTab("settings")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all cursor-pointer ${
-                activeTab === "settings"
+            <Link
+              href="/settings"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                pathname === "/settings"
                   ? "bg-card text-primary shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
-              <span className="hidden xl:inline">{dictionary.nav.settings}</span>
-            </button>
+              <span className="hidden md:inline">{dictionary.nav.settings}</span>
+            </Link>
           </nav>
 
           {/* Theme Toggle */}
@@ -236,29 +215,20 @@ export function StoreNavbar({
             )}
           </button>
 
-          {/* User Account / 1-Click Login Trigger */}
-          <button
-            type="button"
-            onClick={() => setIsLoginModalOpen(true)}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-card hover:bg-secondary text-xs sm:text-sm font-medium transition-colors cursor-pointer"
-          >
-            {user ? (
-              <>
-                <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-[11px] font-bold flex items-center justify-center">
-                  {user.avatar}
-                </span>
-                <span className="hidden xl:inline max-w-[110px] truncate font-medium">
-                  {user.name.split(" ")[0]}
-                </span>
-                <UserCheck className="w-3.5 h-3.5 text-emerald-500 hidden sm:inline" />
-              </>
-            ) : (
-              <>
-                <LogIn className="w-4 h-4 text-primary" />
-                <span className="hidden sm:inline">{dictionary.nav.login}</span>
-              </>
-            )}
-          </button>
+          {/* Customer Profile Pill (Links to /settings) */}
+          {user && (
+            <Link
+              href="/settings"
+              className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-card hover:bg-secondary text-xs font-medium transition-colors"
+            >
+              <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-[11px] font-bold flex items-center justify-center">
+                {user.avatar}
+              </span>
+              <span className="hidden xl:inline max-w-[100px] truncate font-semibold">
+                {user.name.split(" ")[0]}
+              </span>
+            </Link>
+          )}
 
           {/* Cart Drawer Trigger */}
           <button
@@ -277,4 +247,3 @@ export function StoreNavbar({
     </header>
   );
 }
-

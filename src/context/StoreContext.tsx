@@ -21,12 +21,15 @@ import {
 import { formatStorePrice } from "@/lib/formatters";
 
 interface StoreContextValue {
+  isMounted: boolean;
   products: Product[];
   cart: CartItem[];
   orders: Order[];
   user: StoreUser | null;
   currency: CurrencyCode;
   appliedPromoCode: string | null;
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
   cartItemCount: number;
   cartSubtotal: number;
   cartDiscount: number;
@@ -61,26 +64,34 @@ interface StoreContextValue {
   setIsCheckoutOpen: (open: boolean) => void;
   activeInvoiceOrder: Order | null;
   setActiveInvoiceOrder: (order: Order | null) => void;
-  isLoginModalOpen: boolean;
-  setIsLoginModalOpen: (open: boolean) => void;
 }
 
 const StoreContext = createContext<StoreContextValue | undefined>(undefined);
 
 const STATUS_SEQUENCE: OrderStatus[] = ["pending", "processing", "shipped", "delivered"];
 
+function emptySubscribe() {
+  return () => {};
+}
+
 export function StoreProvider({ children }: { children: React.ReactNode }) {
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+
   const state = useSyncExternalStore(
     subscribeStore,
     getClientSnapshot,
     getServerSnapshot
   );
 
+  const [searchQuery, setSearchQuery] = useState("");
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [activeInvoiceOrder, setActiveInvoiceOrder] = useState<Order | null>(null);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const cartItemCount = state.cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartSubtotal = state.cart.reduce(
@@ -114,7 +125,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const login = (user: StoreUser) => {
     updateStoreState((prev) => ({ ...prev, user }));
-    setIsLoginModalOpen(false);
   };
 
   const logout = () => {
@@ -307,12 +317,15 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   return (
     <StoreContext.Provider
       value={{
+        isMounted,
         products: state.products,
         cart: state.cart,
         orders: state.orders,
         user: state.user,
         currency: state.currency,
         appliedPromoCode: state.appliedPromoCode,
+        searchQuery,
+        setSearchQuery,
         cartItemCount,
         cartSubtotal,
         cartDiscount,
@@ -341,8 +354,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         setIsCheckoutOpen,
         activeInvoiceOrder,
         setActiveInvoiceOrder,
-        isLoginModalOpen,
-        setIsLoginModalOpen,
       }}
     >
       {children}
@@ -357,4 +368,3 @@ export function useStore() {
   }
   return ctx;
 }
-

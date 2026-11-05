@@ -4,12 +4,15 @@ export interface StoreDictionary {
   brand: {
     name: string;
     subtitle: string;
+    adminSubtitle: string;
     badge: string;
   };
   nav: {
     shop: string;
     orders: string;
-    admin: string;
+    adminDashboard: string;
+    adminOrders: string;
+    adminInventory: string;
     settings: string;
     searchPlaceholder: string;
     cart: string;
@@ -101,6 +104,8 @@ export interface StoreDictionary {
   orders: {
     title: string;
     subtitle: string;
+    adminTitle: string;
+    adminSubtitle: string;
     orderNumber: string;
     date: string;
     status: string;
@@ -111,6 +116,7 @@ export interface StoreDictionary {
     printInvoice: string;
     advanceStatus: string;
     emptyOrders: string;
+    statusAll: string;
     statusPending: string;
     statusProcessing: string;
     statusShipped: string;
@@ -120,6 +126,11 @@ export interface StoreDictionary {
     payment: string;
   };
   admin: {
+    dashboardTitle: string;
+    dashboardSubtitle: string;
+    recentOrders: string;
+    categoryMix: string;
+    pendingFulfillment: string;
     title: string;
     subtitle: string;
     addProduct: string;
@@ -155,7 +166,7 @@ export interface StoreDictionary {
     resetBtn: string;
     resetConfirm: string;
     accountTitle: string;
-    switchRole: string;
+    logoutDesc: string;
   };
   auth: {
     title: string;
@@ -163,11 +174,12 @@ export interface StoreDictionary {
     demoNotice: string;
     oneClickTitle: string;
     customerRole: string;
+    customerDesc: string;
     managerRole: string;
+    managerDesc: string;
     emailLabel: string;
     passwordLabel: string;
     signInBtn: string;
-    backToStore: string;
+    credentialsRequired: string;
   };
 }
-

@@ -8,7 +8,6 @@ import {
 import {
   INITIAL_PRODUCTS,
   INITIAL_ORDERS,
-  DEMO_USERS,
 } from "@/data";
 
 const STORAGE_KEY = "jgd_store_sandbox_v1";
@@ -35,7 +34,7 @@ export const SERVER_SNAPSHOT: StoreSandboxState = {
     },
   ],
   orders: INITIAL_ORDERS,
-  user: DEMO_USERS[0],
+  user: null,
   currency: "LAK",
   appliedPromoCode: null,
 };
@@ -116,8 +115,10 @@ export function updateStoreState(
 }
 
 export function resetStoreSandbox() {
+  const current = getClientSnapshot();
   const freshState: StoreSandboxState = {
     ...SERVER_SNAPSHOT,
+    user: current.user,
     timestamp: Date.now(),
   };
   cachedClientState = freshState;

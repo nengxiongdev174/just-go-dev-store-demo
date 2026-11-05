@@ -7,7 +7,6 @@ import {
   Clock,
   CheckCircle2,
   FileText,
-  FastForward,
   MapPin,
   Box,
 } from "lucide-react";
@@ -19,12 +18,7 @@ const STEPS: OrderStatus[] = ["pending", "processing", "shipped", "delivered"];
 
 export function OrdersView() {
   const { locale, dictionary } = useLanguage();
-  const {
-    orders,
-    formatPrice,
-    advanceOrderStatus,
-    setActiveInvoiceOrder,
-  } = useStore();
+  const { orders, formatPrice, setActiveInvoiceOrder } = useStore();
 
   const getStatusLabel = (status: OrderStatus) => {
     switch (status) {
@@ -43,15 +37,13 @@ export function OrdersView() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-foreground">
-            {dictionary.orders.title}
-          </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground">
-            {dictionary.orders.subtitle}
-          </p>
-        </div>
+      <div>
+        <h1 className="text-xl sm:text-2xl font-extrabold text-foreground">
+          {dictionary.orders.title}
+        </h1>
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          {dictionary.orders.subtitle}
+        </p>
       </div>
 
       {orders.length === 0 ? (
@@ -84,27 +76,14 @@ export function OrdersView() {
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    {order.status !== "delivered" && (
-                      <button
-                        type="button"
-                        onClick={() => advanceOrderStatus(order.id)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-xs font-bold transition-colors cursor-pointer"
-                      >
-                        <FastForward className="w-3.5 h-3.5" />
-                        <span>{dictionary.orders.advanceStatus}</span>
-                      </button>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => setActiveInvoiceOrder(order)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border text-xs font-bold transition-colors cursor-pointer"
-                    >
-                      <FileText className="w-3.5 h-3.5" />
-                      <span>{dictionary.orders.viewInvoice}</span>
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveInvoiceOrder(order)}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>{dictionary.orders.viewInvoice}</span>
+                  </button>
                 </div>
 
                 {/* Live Parcel Status Stepper */}
@@ -190,4 +169,3 @@ export function OrdersView() {
     </div>
   );
 }
-
