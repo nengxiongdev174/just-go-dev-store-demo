@@ -3,6 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { StoreProvider } from "@/context/StoreContext";
+import { ToastProvider } from "@/context/ToastContext";
 
 export const metadata: Metadata = {
   title: "JustGoDev • Live Demo",
@@ -26,11 +27,13 @@ export default function RootLayout({
         className="antialiased min-h-screen bg-background text-foreground"
         suppressHydrationWarning
       >
-        <ThemeProvider>
-          <LanguageProvider>
-            <StoreProvider>{children}</StoreProvider>
-          </LanguageProvider>
-        </ThemeProvider>
+        <ToastProvider>
+          <ThemeProvider>
+            <LanguageProvider>
+              <StoreProvider>{children}</StoreProvider>
+            </LanguageProvider>
+          </ThemeProvider>
+        </ToastProvider>
       </body>
     </html>
   );

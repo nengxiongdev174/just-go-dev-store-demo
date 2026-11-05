@@ -19,6 +19,8 @@ import {
   resetStoreSandbox,
 } from "@/lib/storage";
 import { formatStorePrice } from "@/lib/formatters";
+import { useLanguage } from "@/context/LanguageContext";
+import { useToast } from "@/context/ToastContext";
 
 interface StoreContextValue {
   isMounted: boolean;
@@ -75,6 +77,9 @@ function emptySubscribe() {
 }
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
+  const { locale, dictionary } = useLanguage();
+  const { showToast } = useToast();
+
   const isMounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -121,14 +126,42 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const setCurrency = (currency: CurrencyCode) => {
     updateStoreState((prev) => ({ ...prev, currency }));
+    showToast({
+      variant: "info",
+      title:
+        locale === "lo"
+          ? `ປ່ຽນສະກຸນເງິນເປັນ ${currency}`
+          : locale === "th"
+          ? `เปลี่ยนสกุลเงินเป็น ${currency}`
+          : `Switched currency to ${currency}`,
+    });
   };
 
   const login = (user: StoreUser) => {
     updateStoreState((prev) => ({ ...prev, user }));
+    showToast({
+      variant: "success",
+      title:
+        locale === "lo"
+          ? `ເຂົ້າສູ່ລະບົບສຳເລັດ (${user.name})`
+          : locale === "th"
+          ? `เข้าสู่ระบบสำเร็จ (${user.name})`
+          : `Signed in as ${user.name}`,
+      description: user.email,
+    });
   };
 
   const logout = () => {
     updateStoreState((prev) => ({ ...prev, user: null }));
+    showToast({
+      variant: "info",
+      title:
+        locale === "lo"
+          ? "ອອກຈາກລະບົບແລ້ວ"
+          : locale === "th"
+          ? "ออกจากระบบเรียบร้อยแล้ว"
+          : "Signed out successfully",
+    });
   };
 
   const addToCart = (product: Product, quantity = 1, variant?: string) => {
@@ -163,6 +196,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         ],
       };
     });
+    showToast({
+      variant: "cart",
+      title: `${dictionary.catalog.added}: ${product.name[locale]}`,
+      description: `${quantity} × ${formatPrice(product.price)}${
+        chosenVariant ? ` (${chosenVariant})` : ""
+      }`,
+    });
   };
 
   const updateCartQuantity = (
@@ -185,6 +225,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeFromCart = (productId: string, variant?: string) => {
+    const target = state.cart.find(
+      (item) => item.product.id === productId && item.selectedVariant === variant
+    );
     updateStoreState((prev) => ({
       ...prev,
       cart: prev.cart.filter(
@@ -192,6 +235,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           !(item.product.id === productId && item.selectedVariant === variant)
       ),
     }));
+    showToast({
+      variant: "info",
+      title:
+        locale === "lo"
+          ? "ລຶບສິນຄ້າອອກຈາກກະຕ່າແລ້ວ"
+          : locale === "th"
+          ? "ลบสินค้าออกจากตะกร้าแล้ว"
+          : "Removed item from cart",
+      description: target ? target.product.name[locale] : undefined,
+    });
   };
 
   const clearCart = () => {
@@ -200,18 +253,36 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       cart: [],
       appliedPromoCode: null,
     }));
+    showToast({
+      variant: "info",
+      title:
+        locale === "lo"
+          ? "ລ້າງກະຕ່າສິນຄ້າທັງໝົດແລ້ວ"
+          : locale === "th"
+          ? "ล้างตะกร้าสินค้าทั้งหมดแล้ว"
+          : "Cart cleared",
+    });
   };
 
   const applyPromoCode = (code: string): boolean => {
     const normalized = code.trim().toUpperCase();
     const promo = PROMO_CODES.find((p) => p.code === normalized);
     if (!promo || cartSubtotal < promo.minSpend) {
+      showToast({
+        variant: "error",
+        title: dictionary.cart.invalidPromo,
+      });
       return false;
     }
     updateStoreState((prev) => ({
       ...prev,
       appliedPromoCode: promo.code,
     }));
+    showToast({
+      variant: "success",
+      title: `${dictionary.cart.promoApplied} (${promo.code})`,
+      description: `-${promo.discountPercent}%`,
+    });
     return true;
   };
 
@@ -220,6 +291,15 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       ...prev,
       appliedPromoCode: null,
     }));
+    showToast({
+      variant: "info",
+      title:
+        locale === "lo"
+          ? "ຍົກເລີກລະຫັດສ່ວນຫຼຸດແລ້ວ"
+          : locale === "th"
+          ? "ยกเลิกรหัสส่วนลดแล้ว"
+          : "Promo code removed",
+    });
   };
 
   const placeOrder = (payload: {
@@ -275,10 +355,17 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       };
     });
 
+    showToast({
+      variant: "success",
+      title: dictionary.checkout.orderSuccessTitle,
+      description: `${newOrder.orderNumber} • ${formatPrice(newOrder.total)}`,
+    });
+
     return newOrder;
   };
 
   const advanceOrderStatus = (orderId: string) => {
+    const targetOrder = state.orders.find((o) => o.id === orderId);
     updateStoreState((prev) => ({
       ...prev,
       orders: prev.orders.map((order) => {
@@ -290,28 +377,69 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         return { ...order, status: STATUS_SEQUENCE[currentIndex + 1] };
       }),
     }));
+    if (targetOrder) {
+      showToast({
+        variant: "success",
+        title:
+          locale === "lo"
+            ? `ອັບເດດສະຖານະ ${targetOrder.orderNumber} ສຳເລັດ`
+            : locale === "th"
+            ? `อัปเดตสถานะ ${targetOrder.orderNumber} สำเร็จ`
+            : `Updated status for ${targetOrder.orderNumber}`,
+      });
+    }
   };
 
   const saveProduct = (product: Product) => {
+    const exists = state.products.some((p) => p.id === product.id);
     updateStoreState((prev) => {
-      const exists = prev.products.some((p) => p.id === product.id);
       const nextProducts = exists
         ? prev.products.map((p) => (p.id === product.id ? product : p))
         : [product, ...prev.products];
       return { ...prev, products: nextProducts };
     });
+    showToast({
+      variant: "success",
+      title: exists
+        ? locale === "lo"
+          ? "ອັບເດດຂໍ້ມູນສິນຄ້າສຳເລັດ"
+          : locale === "th"
+          ? "อัปเดตข้อมูลสินค้าสำเร็จ"
+          : "Product updated successfully"
+        : locale === "lo"
+        ? "ເພີ່ມສິນຄ້າໃໝ່ສຳເລັດ"
+        : locale === "th"
+        ? "เพิ่มสินค้าใหม่สำเร็จ"
+        : "New product added",
+      description: `${product.name[locale]} (${product.sku})`,
+    });
   };
 
   const deleteProduct = (productId: string) => {
+    const target = state.products.find((p) => p.id === productId);
     updateStoreState((prev) => ({
       ...prev,
       products: prev.products.filter((p) => p.id !== productId),
       cart: prev.cart.filter((c) => c.product.id !== productId),
     }));
+    showToast({
+      variant: "info",
+      title:
+        locale === "lo"
+          ? "ລຶບສິນຄ້າອອກຈາກຄັງແລ້ວ"
+          : locale === "th"
+          ? "ลบสินค้าออกจากคลังแล้ว"
+          : "Product deleted from inventory",
+      description: target ? target.name[locale] : undefined,
+    });
   };
 
   const resetSandbox = () => {
     resetStoreSandbox();
+    showToast({
+      variant: "success",
+      title: dictionary.settings.resetConfirm,
+    });
   };
 
   return (

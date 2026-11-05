@@ -73,11 +73,10 @@ export function StoreNavbar() {
                   key={cur}
                   type="button"
                   onClick={() => setCurrency(cur)}
-                  className={`px-2 py-0.5 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
-                    currency === cur
+                  className={`px-2 py-0.5 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${currency === cur
                       ? "bg-white text-indigo-700 shadow-xs"
                       : "text-white/85 hover:text-white"
-                  }`}
+                    }`}
                 >
                   {cur}
                 </button>
@@ -91,11 +90,10 @@ export function StoreNavbar() {
                   key={loc.code}
                   type="button"
                   onClick={() => setLocale(loc.code)}
-                  className={`px-2 py-0.5 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
-                    locale === loc.code
+                  className={`px-2 py-0.5 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${locale === loc.code
                       ? "bg-white text-indigo-700 shadow-xs"
                       : "text-white/85 hover:text-white"
-                  }`}
+                    }`}
                 >
                   {loc.label}
                 </button>
@@ -163,11 +161,10 @@ export function StoreNavbar() {
           <nav className="flex items-center bg-secondary/60 p-1 rounded-xl border border-border/60">
             <Link
               href="/shop"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                pathname === "/shop"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${pathname === "/shop"
                   ? "bg-card text-primary shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               <ShoppingBag className="w-4 h-4" />
               <span className="hidden sm:inline">{dictionary.nav.shop}</span>
@@ -175,11 +172,10 @@ export function StoreNavbar() {
 
             <Link
               href="/orders"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                pathname === "/orders"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${pathname === "/orders"
                   ? "bg-card text-primary shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               <PackageCheck className="w-4 h-4" />
               <span className="hidden sm:inline">{dictionary.nav.orders}</span>
@@ -190,11 +186,10 @@ export function StoreNavbar() {
 
             <Link
               href="/settings"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                pathname === "/settings"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${pathname === "/settings"
                   ? "bg-card text-primary shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
               <span className="hidden md:inline">{dictionary.nav.settings}</span>
@@ -202,7 +197,7 @@ export function StoreNavbar() {
           </nav>
 
           {/* Theme Toggle */}
-          <button
+          {/* <button
             type="button"
             onClick={toggleTheme}
             aria-label="Toggle Theme"
@@ -213,6 +208,19 @@ export function StoreNavbar() {
             ) : (
               <Moon className="w-4 h-4 text-slate-600" />
             )}
+          </button> */}
+
+          {/* Cart Drawer Trigger */}
+          <button
+            type="button"
+            onClick={() => setIsCartOpen(true)}
+            className="relative flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs sm:text-sm shadow-md shadow-indigo-500/20 transition-all cursor-pointer"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            <span className="hidden sm:inline">{dictionary.nav.cart}</span>
+            <span className="px-1.5 py-0.5 text-[11px] rounded-full bg-white text-indigo-700 font-bold leading-none">
+              {cartItemCount}
+            </span>
           </button>
 
           {/* Customer Profile Pill (Links to /settings) */}
@@ -229,19 +237,6 @@ export function StoreNavbar() {
               </span>
             </Link>
           )}
-
-          {/* Cart Drawer Trigger */}
-          <button
-            type="button"
-            onClick={() => setIsCartOpen(true)}
-            className="relative flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs sm:text-sm shadow-md shadow-indigo-500/20 transition-all cursor-pointer"
-          >
-            <ShoppingBag className="w-4 h-4" />
-            <span className="hidden sm:inline">{dictionary.nav.cart}</span>
-            <span className="px-1.5 py-0.5 text-[11px] rounded-full bg-white text-indigo-700 font-bold leading-none">
-              {cartItemCount}
-            </span>
-          </button>
         </div>
       </div>
     </header>

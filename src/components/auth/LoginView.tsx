@@ -115,11 +115,10 @@ export function LoginView({ onLogin }: LoginViewProps) {
                   key={loc.code}
                   type="button"
                   onClick={() => setLocale(loc.code)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    locale === loc.code
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${locale === loc.code
                       ? "bg-primary text-primary-foreground shadow-2xs"
                       : "text-muted-foreground hover:text-foreground"
-                  }`}
+                    }`}
                 >
                   {loc.label}
                 </button>
@@ -149,6 +148,49 @@ export function LoginView({ onLogin }: LoginViewProps) {
           <p className="text-xs sm:text-sm text-muted-foreground">
             {dictionary.auth.subtitle}
           </p>
+        </div>
+
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-foreground">
+              {dictionary.auth.emailLabel}
+            </label>
+            <div className="relative">
+              <Mail className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border bg-secondary/40 focus:bg-card text-xs sm:text-sm focus:border-primary focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-foreground">
+              {dictionary.auth.passwordLabel}
+            </label>
+            <div className="relative">
+              <Lock className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-border bg-secondary/40 focus:bg-card text-xs sm:text-sm focus:border-primary focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* 1-Click Notice Banner */}
@@ -181,19 +223,17 @@ export function LoginView({ onLogin }: LoginViewProps) {
                   key={item.user.id}
                   type="button"
                   onClick={() => handleSelectAccount(item)}
-                  className={`w-full p-3.5 rounded-2xl border text-left transition-all flex items-start justify-between gap-3 cursor-pointer ${
-                    isSelected
+                  className={`w-full p-3.5 rounded-2xl border text-left transition-all flex items-start justify-between gap-3 cursor-pointer ${isSelected
                       ? "border-primary bg-primary/10 ring-1 ring-primary shadow-xs"
                       : "border-border bg-secondary/40 hover:bg-secondary/70"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-start gap-3">
                     <div
-                      className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
-                        isSelected
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${isSelected
                           ? "bg-primary text-primary-foreground"
                           : item.badgeColor
-                      }`}
+                        }`}
                     >
                       <RoleIcon className="w-5 h-5" />
                     </div>
@@ -225,49 +265,6 @@ export function LoginView({ onLogin }: LoginViewProps) {
               {errorMsg}
             </div>
           )}
-
-          <div className="space-y-3">
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-foreground">
-                {dictionary.auth.emailLabel}
-              </label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border bg-secondary/40 focus:bg-card text-xs sm:text-sm focus:border-primary focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-foreground">
-                {dictionary.auth.passwordLabel}
-              </label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-border bg-secondary/40 focus:bg-card text-xs sm:text-sm focus:border-primary focus:outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
 
           <button
             type="submit"

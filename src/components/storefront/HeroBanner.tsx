@@ -12,6 +12,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { useToast } from "@/context/ToastContext";
 
 interface HeroBannerProps {
   onExploreClick: () => void;
@@ -23,11 +24,17 @@ export function HeroBanner({
   onTrackOrdersClick,
 }: HeroBannerProps) {
   const { dictionary } = useLanguage();
+  const { showToast } = useToast();
   const [copied, setCopied] = useState(false);
 
   const handleCopyPromo = () => {
     navigator.clipboard?.writeText("JUSTGODEV10");
     setCopied(true);
+    showToast({
+      variant: "success",
+      title: `${dictionary.hero.copied}: JUSTGODEV10`,
+      description: "-10%",
+    });
     setTimeout(() => setCopied(false), 2000);
   };
 
