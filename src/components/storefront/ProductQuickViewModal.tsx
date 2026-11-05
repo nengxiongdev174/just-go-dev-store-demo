@@ -22,7 +22,6 @@ export function ProductQuickViewModal() {
     setQuickViewProduct,
     formatPrice,
     addToCart,
-    setIsCartOpen,
   } = useStore();
 
   const [selectedVariant, setSelectedVariant] = useState<string | undefined>(
@@ -45,7 +44,6 @@ export function ProductQuickViewModal() {
     if (quickViewProduct.stock <= 0) return;
     addToCart(quickViewProduct, quantity, activeVariant);
     handleClose();
-    setIsCartOpen(true);
   };
 
   return (
