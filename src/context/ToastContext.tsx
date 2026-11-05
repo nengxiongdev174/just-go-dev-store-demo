@@ -58,8 +58,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     <ToastContext.Provider value={{ showToast }}>
       {children}
 
-      {/* Floating Toast Stack */}
-      <div className="fixed bottom-5 right-5 z-[100] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0 print:hidden">
+      {/* Floating Toast Stack (Top-Right below Navbar) */}
+      <div
+        aria-live="polite"
+        className="fixed top-20 right-4 sm:right-6 z-[9999] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0 print:hidden"
+      >
         {toasts.map((t) => {
           const Icon =
             t.variant === "error"
@@ -79,10 +82,19 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               ? "bg-sky-500 text-white shadow-sky-500/30"
               : "bg-emerald-500 text-white shadow-emerald-500/30";
 
+          const borderAccent =
+            t.variant === "error"
+              ? "border-rose-500/40"
+              : t.variant === "cart"
+              ? "border-indigo-500/40"
+              : t.variant === "info"
+              ? "border-sky-500/40"
+              : "border-emerald-500/40";
+
           return (
             <div
               key={t.id}
-              className="pointer-events-auto flex items-start gap-3 p-3.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-border shadow-2xl animate-in slide-in-from-bottom-4 fade-in duration-200"
+              className={`toast-enter pointer-events-auto flex items-start gap-3 p-3.5 rounded-2xl bg-card/95 backdrop-blur-xl border-2 ${borderAccent} shadow-2xl`}
             >
               <div
                 className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-md ${iconWrapStyle}`}
@@ -95,7 +107,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                   {t.title}
                 </p>
                 {t.description && (
-                  <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                  <p className="text-xs text-muted-foreground truncate mt-0.5 font-medium">
                     {t.description}
                   </p>
                 )}
@@ -123,3 +135,4 @@ export function useToast() {
   }
   return ctx;
 }
+

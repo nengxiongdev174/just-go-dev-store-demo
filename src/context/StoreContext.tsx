@@ -214,6 +214,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       removeFromCart(productId, variant);
       return;
     }
+    const target = state.cart.find(
+      (item) => item.product.id === productId && item.selectedVariant === variant
+    );
     updateStoreState((prev) => ({
       ...prev,
       cart: prev.cart.map((item) =>
@@ -222,6 +225,19 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           : item
       ),
     }));
+    if (target) {
+      const clampedQty = Math.min(target.product.stock, quantity);
+      showToast({
+        variant: "cart",
+        title:
+          locale === "lo"
+            ? `ອັບເດດຈຳນວນສິນຄ້າ (${clampedQty})`
+            : locale === "th"
+            ? `อัปเดตจำนวนสินค้า (${clampedQty})`
+            : `Updated quantity (${clampedQty})`,
+        description: target.product.name[locale],
+      });
+    }
   };
 
   const removeFromCart = (productId: string, variant?: string) => {
