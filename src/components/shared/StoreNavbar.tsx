@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -9,13 +8,10 @@ import {
   Search,
   PackageCheck,
   SlidersHorizontal,
-  Sun,
-  Moon,
   X,
   Sparkles,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-import { useTheme } from "@/context/ThemeContext";
 import { useStore } from "@/context/StoreContext";
 import { type Locale } from "@/locales";
 import { type CurrencyCode } from "@/types/store";
@@ -32,7 +28,6 @@ export function StoreNavbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { locale, setLocale, dictionary } = useLanguage();
-  const { theme, toggleTheme } = useTheme();
   const {
     cartItemCount,
     orders,

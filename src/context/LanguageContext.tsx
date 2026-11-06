@@ -15,16 +15,24 @@ const LanguageContext = createContext<LanguageContextValue | undefined>(undefine
 const LOCALE_KEY = "jgd_store_locale";
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("lo");
+  const [locale, setLocaleState] = useState<Locale>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = window.localStorage.getItem(LOCALE_KEY) as Locale | null;
+        if (saved && (saved === "lo" || saved === "th" || saved === "en")) {
+          return saved;
+        }
+      } catch {
+        // Fallback
+      }
+    }
+    return "lo";
+  });
   const { showToast } = useToast();
 
   useEffect(() => {
-    const saved = window.localStorage.getItem(LOCALE_KEY) as Locale | null;
-    if (saved && (saved === "lo" || saved === "th" || saved === "en")) {
-      setLocaleState(saved);
-      document.documentElement.lang = saved;
-    }
-  }, []);
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const setLocale = (next: Locale) => {
     setLocaleState(next);

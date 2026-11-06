@@ -16,15 +16,24 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 const THEME_KEY = "jgd_store_theme";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = window.localStorage.getItem(THEME_KEY) as Theme | null;
+        if (saved === "dark" || saved === "light") {
+          return saved;
+        }
+      } catch {
+        // Fallback
+      }
+    }
+    return "light";
+  });
   const { showToast } = useToast();
 
   useEffect(() => {
-    const saved = window.localStorage.getItem(THEME_KEY) as Theme | null;
-    const initial: Theme = saved === "dark" ? "dark" : "light";
-    setThemeState(initial);
-    document.documentElement.classList.toggle("dark", initial === "dark");
-  }, []);
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
 
   const setTheme = (next: Theme) => {
     setThemeState(next);
